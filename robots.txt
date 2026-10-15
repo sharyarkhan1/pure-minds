@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Pages currently send noindex, nofollow via meta and X-Robots-Tag.
+# Crawling is allowed so those directives can be read.
+# Switch the $robots_meta value in includes/config.php to "index, follow" when going live.

@@ -1,0 +1,46 @@
+Options -MultiViews
+ErrorDocument 404 /404.php
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [R=301,L]
+RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301,NE]
+
+# Redirect direct public .php requests to their canonical extensionless URLs.
+RewriteCond %{THE_REQUEST} \s/+(.*/)?index\.php(?:[?\s]) [NC]
+RewriteCond %{REQUEST_URI} ^(.*/)index\.php$ [NC]
+RewriteRule ^index\.php$ %1 [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?book-an-appointment\.php(?:[?\s]) [NC]
+RewriteCond %{REQUEST_URI} ^(.*/)book-an-appointment\.php$ [NC]
+RewriteRule ^book-an-appointment\.php$ %1book-an-appointment [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?admin\.php(?:[?\s]) [NC]
+RewriteCond %{REQUEST_URI} ^(.*/)admin\.php$ [NC]
+RewriteRule ^admin\.php$ %1admin [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?admin-login\.php(?:[?\s]) [NC]
+RewriteCond %{REQUEST_URI} ^(.*/)admin-login\.php$ [NC]
+RewriteRule ^admin-login\.php$ %1admin-login [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?admin-logout\.php(?:[?\s]) [NC]
+RewriteCond %{REQUEST_URI} ^(.*/)admin-logout\.php$ [NC]
+RewriteRule ^admin-logout\.php$ %1admin-logout [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?admin-portal\.php(?:[?\s]) [NC]
+RewriteCond %{REQUEST_URI} ^(.*/)admin-portal\.php$ [NC]
+RewriteRule ^admin-portal\.php$ %1admin [R=301,L]
+
+# Do not route existing assets, directories, or internal files through page routing.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Canonical extensionless public pages and the appointment availability endpoint.
+RewriteRule ^$ index.php [L]
+RewriteRule ^book-an-appointment$ book-an-appointment.php [L]
+RewriteRule ^admin$ admin.php [L]
+RewriteRule ^admin-login$ admin-login.php [L]
+RewriteRule ^admin-logout$ admin-logout.php [L]
+RewriteRule ^availability$ includes/appointment-handler.php [L,QSA]
+
+# Unknown routes remain 404s rather than being mapped to an arbitrary PHP file.
+RewriteRule ^ - [R=404,L]
